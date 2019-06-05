@@ -3,54 +3,8 @@
 <head>
 <meta name="viewport" content="initial-scale=1.0">
 <title>Picker</title>
+<link rel="stylesheet" href="style.css">
 <style>
-body {
-    background:#FFF;
-    color:#000;
-    font-family:verdana, sans-serif;
-    font-size:10pt;
-    margin:0;
-    padding:10px;
-}
-
-a:link, a:visited {
-    color:#008;
-    font-weight:bold;
-    text-decoration:none;
-}
-
-a:active, a:hover {
-    color:#ACF;
-}
-
-.info {
-    font-weight:bold;
-}
-
-button {
-    font-family:inherit;
-    cursor:pointer;
-    border:0;
-    border-radius:3px;
-    padding:0.3em 0.5em;
-    background:#CCC;
-    color:#000;
-}
-
-button:hover {
-    background:#DDD;
-}
-
-button.disabled {
-    background:#DDD;
-    color:#888;
-    cursor:not-allowed;
-}
-
-button.disabled:hover {
-    background:#DDD;
-}
-
 #container {
     position:relative;
     margin-left:-10px;
@@ -235,10 +189,19 @@ button.disabled:hover {
 
 var items = [
     // Define your items here
+    {id: "temp1"},
+    {id: "temp2"},
+    {id: "temp3"},
+    {id: "temp4"},
+    {id: "temp5"}
 ];
 
 var myPicker = new picker.Picker({
-    items: items
+    items: items,
+    defaultSettings: {
+        minBatchSize: 2,
+        maxBatchSize: 8
+    }
 });
 
 var pickerUI = new PickerUI(myPicker, {
