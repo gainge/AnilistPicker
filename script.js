@@ -29,7 +29,7 @@ function getAnimeList(username) {
               userPreferred
             }
             coverImage {
-              medium
+              large
             }
           }
         }
@@ -71,16 +71,13 @@ function handleResponse(response) {
 function handleData(data) {
   // Obtain lists and filter based on current settings
   var lists = data.data.MediaListCollection.lists;
-  lists.filter((list) => (!list.isCustomList && 
+  lists = lists.filter((list) => (!list.isCustomList && 
     (list.status === "COMPLETED") ||
     (list.status === "CURRENT" && shouldIncludeCurrent())
     ));
 
   // Now we're ready to incorporate the favorite picker!
   initializePicker(lists);
-
-  console.log("Intial Data:");
-  console.log(data);
 }
 
 function handleError(error) {
@@ -99,6 +96,57 @@ function initializePicker(animeLists) {
   animeLists.forEach((list) => {addAnimeItems(list.entries, items)})
 
   console.log(items);
+
+  // Construct the arguments for our picker
+  var myPicker = new picker.Picker({
+      items: items,
+      defaultSettings: {
+          minBatchSize: 2,
+          maxBatchSize: 8
+      }
+  });
+
+  var pickerUI = new PickerUI(myPicker, {
+      elements: {
+          pick: "#pick",
+          pass: "#pass",
+          undo: "#undo",
+          redo: "#redo",
+          evaluating: "#evaluating",
+          favorites: "#favorites"
+      }
+  });
+
+  pickerUI.initialize();
+
+  var sortable = new Sortable(pickerUI.elem.favorites.get(0), {
+      draggable: '.item',
+      animation: 100,
+      onStart: function() {
+          pickerUI.elem.favorites.addClass("sorting");
+      },
+      onEnd: function() {
+          pickerUI.elem.favorites.removeClass("sorting");
+      },
+      onUpdate: function() {
+          myPicker.setFavorites(pickerUI.elem.favorites.children().map(function() {
+              return pickerUI.getItem(this);
+          }).get());
+          pickerUI.update(true);
+      }
+  });
+
+  // Swap the views
+  hide("homepage");
+  show("picker");
+}
+
+function hide(id) {
+  document.getElementById(id).classList.toggle("hidden", true);
+}
+
+function show(id) {
+  document.getElementById(id).classList.toggle("hidden", false);
 }
 
 function addAnimeItems(list, items) {
@@ -107,7 +155,7 @@ function addAnimeItems(list, items) {
     var newItem = {
       id: anime.id, 
       name: anime.title.userPreferred, 
-      image: anime.coverImage.medium,
+      image: anime.coverImage.large,
     }
 
     items.push(newItem);
@@ -138,7 +186,7 @@ MediaListCollection(
           userPreferred
         }
         coverImage {
-          medium
+          large
         }
       }
     }

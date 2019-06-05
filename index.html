@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Anime Picker</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="picker.js"></script>
+    <script src="picker-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
 </head>
+
 <body>
 
     <div id="homepage">
@@ -19,23 +25,42 @@
 
             <form>
                 <input type="text" value="asd" id="search-field" placeholder="Anlilist Username">
-                <!-- <input type="button" value="" id="submit-search"> -->
                 <button id="submit-search" type="button" onclick="searchProfile()">
                     <svg id="search-icon" class="search-icon" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                        <path d="M0 0h24v24H0z" fill="none"/>
+                        <path
+                            d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                        <path d="M0 0h24v24H0z" fill="none" />
                     </svg>
                 </button>
             </form>
 
         </div>
     </div>
-        
+    <div id="picker" class="hidden">
+        <h1>Picker</h1>
 
-    
+        <p>You can include any content you want here.</p>
 
+        <div id="container">
+
+            <div id="picking">
+                <ul id="evaluating" class="item-list"></ul>
+
+                <p id="buttons"><button id="pick">Pick</button> <button id="pass">Pass</button> <button
+                        id="undo">Undo</button> <button id="redo">Redo</button></p>
+            </div>
+
+            <div id="secondary">
+                <h2>Found favorites</h2>
+
+                <ol id="favorites" class="item-list">
+                </ol>
+            </div>
+        </div>
+    </div>
 
 </body>
 
 <script src="script.js"></script>
+
 </html>
