@@ -67,24 +67,37 @@ button.disabled:hover {
     width: 25rem;
     border: solid 2px rgb(194, 194, 194);
     border-radius: 2px;
+    padding-left: 0.5rem;
 }
 
 #submit-search {
     vertical-align: top;
-    background: #DDD;
+    background-color: #DDD;
     border: none;
     border-radius: 2px;
     width: 3rem;
     height: 3rem;
-    padding: 1rem;
 
-    background-image: url('./res/search.svg');
+    /* background-image: url('./res/search.svg'); */
     background-repeat: no-repeat;
     background-size: 100%;
+
+    transition: background-color 0.3s;
+}
+s
+
+.search-icon {
+    height: 2.5rem;
+    margin-top: 0.15rem;
+    transition: fill 0.3s
 }
 
-
-#submit-search {
-    
+#submit-search:hover {
+    background-color: rgb(97, 95, 95);
 }
+
+#submit-search:hover .search-icon {
+    fill: rgb(224, 224, 224);
+}
+
 
