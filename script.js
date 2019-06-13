@@ -1,4 +1,16 @@
-console.log("YO DAWGGG");
+var searchField = document.getElementById("search-field");
+searchField.onkeypress = function(e) {
+  if (e.keyCode == 13) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (searchField.value) {
+      searchProfile();
+    }
+
+    return false;
+  }
+};
 
 
 function searchProfile() {
@@ -102,8 +114,10 @@ function initializePicker(animeLists) {
       items: items,
       defaultSettings: {
           minBatchSize: 2,
-          maxBatchSize: 8
-      }
+          maxBatchSize: 12
+      },
+      getItemElem: "TODO"
+      // Add the getitemelem option thing here?
   });
 
   var pickerUI = new PickerUI(myPicker, {

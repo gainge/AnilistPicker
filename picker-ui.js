@@ -458,10 +458,22 @@
         var itemContent;
         var itemName;
         itemName = item.name || item.id;
-        if (this.options.getItemElem) {
-            return $(this.options.getItemElem(item, settings)).addClass('item').data('item', item.id);
+        if (true || this.options.getItemElem) {
+            // I'm just gonna hard code it for the first run lel
+            var container = $('<div></div>');
+            var title =  $('<div><p>' + itemName + '</p></div>');
+            title.addClass("item-title");
+
+            var img = $('<img src="' + (this.options.getItemImageUrl ? this.options.getItemImageUrl(item, settings) : item.image) + '" alt="' + itemName + '" title="' + itemName + '">');
+
+            container.append(title);
+            container.append(img);
+            
+            itemContent = container;
+
+            // return $(this.options.getItemElem(item, settings)).addClass('item').data('item', item.id);
         }
-        if (item.image || this.options.getItemImageUrl) {
+        else if (item.image || this.options.getItemImageUrl) {
             itemContent = $('<img src="' + (this.options.getItemImageUrl ? this.options.getItemImageUrl(item, settings) : item.image) + '" alt="' + itemName + '" title="' + itemName + '">');
         }
         else {

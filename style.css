@@ -97,21 +97,21 @@ button.disabled:hover {
 .item-list {
     padding:0;
     list-style-type:none;
-    line-height:100px;
+    /* line-height:100px; */
 }
 
 .item-list li {
     margin:0;
     display:inline-block;
-    height:100px;
+    height:138px;
     width:100px;
-    line-height:100px;
+    /* line-height:100px; */
     border:3px solid transparent;
     text-align:center;
     position:relative;
     vertical-align:top;
     overflow:hidden;
-    border-radius:100%;
+    /* border-radius:100%; */
     background:#F7F7F7;
     color:#000;
 }
@@ -123,10 +123,30 @@ button.disabled:hover {
     width: 100%;
 }
 
+.item-list li img:hover {
+    /* width: 110%;  */
+}
+
 .item-list li span {
     display:inline-block;
     vertical-align:middle;
     line-height:1.2;
+}
+
+
+.item-title {
+    position: absolute;
+    bottom: 0;
+    background: rgba(50, 50, 50, 0.6);
+    color: ghostwhite;
+    font-size: 0.8em;
+    width: 100px;
+    min-height: 50px;
+    vertical-align: middle;
+}
+
+.item-title p {
+    padding: 0rem 0.1rem 0rem 0.1rem;
 }
 
 @media (max-width:636px) {
