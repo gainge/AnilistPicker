@@ -1,3 +1,8 @@
+// Ask before unload
+// window.onbeforeunload = function(){
+//   return 'Are you sure you want to leave?';
+// };
+
 var searchField = document.getElementById("search-field");
 searchField.onkeypress = function(e) {
   if (e.keyCode == 13) {
@@ -11,6 +16,14 @@ searchField.onkeypress = function(e) {
     return false;
   }
 };
+
+var navback = document.getElementById("navback");
+navback.onclick = () => {
+  hide("picker");
+  show("homepage");
+  // Clear the picker
+  document.getElementById("evaluating").innerHTML = "";
+}
 
 
 function searchProfile() {
