@@ -43,12 +43,14 @@ function getAnimeList(username) {
     MediaListCollection(
       userName: $userName, 
       type: ANIME,
-      status_in: [CURRENT, COMPLETED],
+      status_in: [PLANNING],
       sort: MEDIA_ID
       ) {
       lists {
         entries {
           media {
+            status
+            format
             id
             title {
               userPreferred
@@ -96,9 +98,9 @@ function handleResponse(response) {
 function handleData(data) {
   // Obtain lists and filter based on current settings
   var lists = data.data.MediaListCollection.lists;
-  lists = lists.filter((list) => (!list.isCustomList && 
-    (list.status === "COMPLETED") ||
-    (list.status === "CURRENT" && shouldIncludeCurrent())
+  lists = lists.filter((list) => (!list.isCustomList 
+    // (list.status === "COMPLETED") ||
+    // (list.status === "CURRENT" && shouldIncludeCurrent())
     ));
 
   // Now we're ready to incorporate the favorite picker!
@@ -179,6 +181,10 @@ function show(id) {
 function addAnimeItems(list, items) {
   list.forEach((entry) => {
     var anime = entry.media;
+
+    if (anime.status && anime.status !== "FINISHED") return;
+    if (anime.format === "MOVIE") return;
+
     var newItem = {
       id: anime.id, 
       name: anime.title.userPreferred, 
