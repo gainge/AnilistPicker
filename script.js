@@ -25,6 +25,21 @@ navback.onclick = () => {
   document.getElementById("evaluating").innerHTML = "";
 }
 
+const ANILIST = 'anilist';
+const MAL = 'mal';
+
+var activeSite = ANILIST;
+
+var AppData = {
+  siteName: {
+    [ANILIST]: 'Anilist',
+    [MAL]: 'MyAnimeList',
+  },
+  // TODO: put variable callbacks in here and everything I guess
+}
+
+
+updateUI();
 
 function searchProfile() {
   console.log("Searching...");
@@ -114,6 +129,31 @@ function handleError(error) {
 
 
 
+/* State Update Functions */
+function setActiveSite(site) {
+  if (site !== ANILIST && site !== MAL) {
+    RETURN;
+  }
+
+  activeSite = site;
+
+  updateUI();
+}
+
+function updateUI() {
+  // Update search text :)
+  document.getElementById('search-field').setAttribute('placeholder', buildPlaceholder());
+
+  // And don't forget those buttons, my guy!
+  document.querySelectorAll('[id^="button"]').forEach((element) => element.classList.remove('active'));
+  document.getElementById(`button-${activeSite}`).classList.add('active');
+}
+
+function buildPlaceholder() {
+  return `${AppData.siteName[activeSite]} Username...`;
+}
+
+
 /* Helper Functions */
 function initializePicker(animeLists) {
   // We need to build a list of items for our favorite picker
@@ -194,7 +234,6 @@ function addAnimeItems(list, items) {
     items.push(newItem);
   })
 }
-
 
 
 function shouldIncludeCurrent() {

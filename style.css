@@ -247,6 +247,15 @@ button.disabled:hover {
 
 
 /* Search Controls */
+button {
+    vertical-align: top;
+    width: 3rem;
+    height: 3rem;
+    background-color: #DDD;
+    border: none;
+    border-radius: 2px;
+}
+
 #search-container {
     height: 3rem;    
 }
@@ -262,13 +271,6 @@ button.disabled:hover {
 }
 
 #submit-search {
-    vertical-align: top;
-    background-color: #DDD;
-    border: none;
-    border-radius: 2px;
-    width: 3rem;
-    height: 3rem;
-
     /* background-image: url('./res/search.svg'); */
     background-repeat: no-repeat;
     background-size: 100%;
@@ -290,5 +292,30 @@ s
 #submit-search:hover .search-icon {
     fill: rgb(224, 224, 224);
 }
+
+button {
+    vertical-align: top;
+}
+
+#button-anilist {
+    background-image: url('res/anilist.svg');
+    background-size: cover;
+}
+
+#button-mal {
+    background-image: url('res/mal.jpg');
+    background-size: contain;
+}
+
+[id^=button] {
+    filter: grayscale();
+}
+
+[id^=button].active {
+    filter: none
+}
+
+
+
 
 
