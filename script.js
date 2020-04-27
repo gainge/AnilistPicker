@@ -28,17 +28,214 @@ navback.onclick = () => {
 const ANILIST = 'anilist';
 const MAL = 'mal';
 
-var activeSite = ANILIST;
+const LIST_STATUS_PLANNING = 'planning';
+const LIST_STATUS_ON_HOLD = 'on_hold';
 
-var AppData = {
+const LIST_STATUSES = [
+  {
+    label: 'Planning',
+    value: LIST_STATUS_PLANNING,
+  },
+  {
+    label: 'On Hold',
+    value: LIST_STATUS_ON_HOLD,
+  },
+]
+
+
+const AIRING_STATUS_AIRING = 'airing';
+const AIRING_STATUS_COMPLETE = 'complete';
+
+const AIRING_STATUSES = [
+  {
+    label: 'Complete',
+    value: AIRING_STATUS_COMPLETE,
+  },
+  {
+    label: 'Airing',
+    value: AIRING_STATUS_AIRING,
+  },
+]
+
+const FORMAT_TV = 'tv';
+const FORMAT_TV_SHORT = 'tv_short';
+const FORMAT_MOVIE = 'movie';
+const FORMAT_OVA = 'ova';
+const FORMAT_ONA = 'ona';
+const FORMAT_SPECIAL = 'special';
+
+const MEDIA_FORMATS = [
+  {
+    label: 'TV',
+    value: FORMAT_TV,
+  },
+  {
+    label: 'TV Shorts',
+    value: FORMAT_TV_SHORT,
+  },
+  {
+    label: 'Movies',
+    value: FORMAT_MOVIE,
+  },
+  {
+    label: 'OVAs',
+    value: FORMAT_OVA,
+  },
+  {
+    label: 'ONAs',
+    value: FORMAT_ONA,
+  },
+  {
+    label: 'Specials',
+    value: FORMAT_SPECIAL,
+  },
+]
+
+
+
+const SiteEnums = {
+  listStatus: {
+    [ANILIST]: {
+      [LIST_STATUS_PLANNING]: 'PLANNING',
+      [LIST_STATUS_ON_HOLD]: 'PAUSED',
+    },
+    [MAL]: {
+      [LIST_STATUS_PLANNING]: 6,
+      [LIST_STATUS_ON_HOLD]: 3,
+    },
+  },
+  airingStatus: {
+    [ANILIST]: {
+      [AIRING_STATUS_AIRING]: 'RELEASING',
+      [AIRING_STATUS_COMPLETE]: 'FINISHED',
+    },
+    [MAL]: {
+      [AIRING_STATUS_AIRING]: 1,
+      [AIRING_STATUS_COMPLETE]: 2,
+    },
+  },
+  mediaFormat: {
+    [ANILIST]: {
+      [FORMAT_TV]: 'TV',
+      [FORMAT_TV_SHORT]: 'TV_SHORT',
+      [FORMAT_MOVIE]: 'MOVIE',
+      [FORMAT_OVA]: 'OVA',
+      [FORMAT_ONA]: 'ONA',
+      [FORMAT_SPECIAL]: 'SPECIAL',
+    },
+    [MAL]: {
+      [FORMAT_TV]: 'TV',
+      [FORMAT_MOVIE]: 'Movie',
+      [FORMAT_OVA]: 'OVA',
+      [FORMAT_ONA]: 'ONA',
+      [FORMAT_SPECIAL]: 'Special',
+    },
+  }
+}
+
+
+
+const AppData = {
   siteName: {
     [ANILIST]: 'Anilist',
     [MAL]: 'MyAnimeList',
   },
+  url: {
+    [ANILIST]: {
+      base: 'https://graphql.anilist.co',
+      options: '',
+    },
+    [MAL]: {
+      base: 'https://api.jikan.moe/v3/user/',
+      options: '/animelist/all',
+    }
+  },
+  requestMethod: {
+    [ANILIST]: 'POST',
+    [MAL]: 'GET',
+  },
+  buildRequestBody: {
+    [ANILIST]: buildPostBody_anilist,
+    [MAL]: undefined,
+  },
+
+
+  mapData: {
+    [ANILIST]: mapData_anilist,
+    [MAL]: mapData_mal,
+  },
+
+
+  filterMappings: {
+    /* List Status Enum Mapping */
+    [SiteEnums.listStatus[ANILIST][LIST_STATUS_PLANNING]]: LIST_STATUS_PLANNING,
+    [SiteEnums.listStatus[ANILIST][LIST_STATUS_ON_HOLD]]: LIST_STATUS_ON_HOLD,
+
+    [SiteEnums.listStatus[MAL][LIST_STATUS_PLANNING]]: LIST_STATUS_PLANNING,
+    [SiteEnums.listStatus[MAL][LIST_STATUS_ON_HOLD]]: LIST_STATUS_ON_HOLD,
+
+    /* Airing Status Enum Mapping */
+    [SiteEnums.airingStatus[ANILIST][AIRING_STATUS_AIRING]]: AIRING_STATUS_AIRING,
+    [SiteEnums.airingStatus[ANILIST][AIRING_STATUS_COMPLETE]]: AIRING_STATUS_COMPLETE,
+
+    [SiteEnums.airingStatus[MAL][AIRING_STATUS_AIRING]]: AIRING_STATUS_AIRING,
+    [SiteEnums.airingStatus[MAL][AIRING_STATUS_COMPLETE]]: AIRING_STATUS_COMPLETE,
+
+    /* Media Format Enum Mapping */
+    [SiteEnums.mediaFormat[ANILIST][FORMAT_TV]]: FORMAT_TV,
+    [SiteEnums.mediaFormat[ANILIST][FORMAT_TV_SHORT]]: FORMAT_TV_SHORT,
+    [SiteEnums.mediaFormat[ANILIST][FORMAT_MOVIE]]: FORMAT_MOVIE,
+    [SiteEnums.mediaFormat[ANILIST][FORMAT_OVA]]: FORMAT_OVA,
+    [SiteEnums.mediaFormat[ANILIST][FORMAT_ONA]]: FORMAT_ONA,
+    [SiteEnums.mediaFormat[ANILIST][FORMAT_SPECIAL]]: FORMAT_SPECIAL,
+
+    [SiteEnums.mediaFormat[MAL][FORMAT_TV]]: FORMAT_TV,
+    [SiteEnums.mediaFormat[MAL][FORMAT_MOVIE]]: FORMAT_MOVIE,
+    [SiteEnums.mediaFormat[MAL][FORMAT_OVA]]: FORMAT_OVA,
+    [SiteEnums.mediaFormat[MAL][FORMAT_ONA]]: FORMAT_ONA,
+    [SiteEnums.mediaFormat[MAL][FORMAT_SPECIAL]]: FORMAT_SPECIAL,
+
+
+
+  }
+
   // TODO: put variable callbacks in here and everything I guess
 }
 
 
+/* Application State */
+var activeSite = ANILIST;
+
+// Populate the filters
+function initializeFilter(filterItems, defaultOption){
+  var filterState = {};
+
+  filterItems.forEach((item) => filterState[item.value] = false);
+  filterState[defaultOption] = true;
+
+  return filterState;
+}
+
+// Enable only PTW by default
+var activeListStatuses = initializeFilter(LIST_STATUSES, LIST_STATUS_PLANNING);
+// Enable only completed shows by default
+var activeAiringStatuses = initializeFilter(AIRING_STATUSES, AIRING_STATUS_COMPLETE);
+// Enable only TV by default
+var activeMediaFormats = initializeFilter(MEDIA_FORMATS, FORMAT_TV);
+
+// idk if I want to go a step further and put these guys in an array
+// I mean after all it's only like
+// 3 things
+// lol it won't be that bad
+
+
+
+
+/* MAL API Stuff */
+// https://api.jikan.moe/v3/user/${username}/animelist/all
+
+
+initializeUI();
 updateUI();
 
 function searchProfile() {
@@ -52,56 +249,41 @@ function searchProfile() {
   }
 }
 
-function getAnimeList(username) {
-  var query = `
-  query ($userName: String) {
-    MediaListCollection(
-      userName: $userName, 
-      type: ANIME,
-      status_in: [PLANNING],
-      sort: MEDIA_ID
-      ) {
-      lists {
-        entries {
-          media {
-            status
-            format
-            id
-            title {
-              userPreferred
-            }
-            coverImage {
-              large
-            }
-          }
-        }
-        isCustomList
-        status
-      }
-    }
-  }
-  `;
+function createURL(username) {
+  var url =  AppData.url[activeSite].base;
 
-  var variables = {
-    userName: username
+  if (activeSite === MAL) {
+    // Interpolate username between the base url and the jikan API options
+    url = `${url}${username}${AppData.url[activeSite].options}`
+  }
+
+  return url;
+}
+
+function createOptions(username) {
+  var options = {
+    method: AppData.requestMethod[activeSite],
   };
 
-  var url = 'https://graphql.anilist.co',
-    options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-            query: query,
-            variables: variables
-        })
+  if (AppData.buildRequestBody[activeSite]) {
+    // Create the body given the active site configuration
+    options.headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
     };
+    options.body = AppData.buildRequestBody[activeSite](username);
+  }
 
-    fetch(url, options).then(handleResponse)
-      .then(handleData)
-      .catch(handleError);
+  return options;
+}
+
+function getAnimeList(username) {
+  var url = createURL(username);
+  var options = createOptions(username);
+
+  fetch(url, options).then(handleResponse)
+    .then(handleData)
+    .catch(handleError);
 }
 
 function handleResponse(response) {
@@ -111,19 +293,16 @@ function handleResponse(response) {
 }
 
 function handleData(data) {
-  // Obtain lists and filter based on current settings
-  var lists = data.data.MediaListCollection.lists;
-  lists = lists.filter((list) => (!list.isCustomList 
-    // (list.status === "COMPLETED") ||
-    // (list.status === "CURRENT" && shouldIncludeCurrent())
-    ));
+  // Filter data using function based on state here
+  const anime = AppData.mapData[activeSite](data);
 
-  // Now we're ready to incorporate the favorite picker!
-  initializePicker(lists);
+  console.log(anime);
+
+  // initializePicker(anime);
 }
 
-function handleError(error) {
-  alert('User Not Found!');
+function handleError(error, message = 'Unable to retrieve list data!') {
+  alert(message);
   console.error(error);
 }
 
@@ -149,12 +328,141 @@ function updateUI() {
   document.getElementById(`button-${activeSite}`).classList.add('active');
 }
 
+function initializeUI() {
+
+}
+
 function buildPlaceholder() {
   return `${AppData.siteName[activeSite]} Username...`;
 }
 
 
+
+
 /* Helper Functions */
+function mapData_anilist(data) {
+  let mapped = [];
+
+  let lists = data.data.MediaListCollection.lists;
+  lists = lists.filter((list) => (!list.isCustomList));
+
+  console.log(lists);
+
+  lists.forEach((list) => (
+    list.entries.forEach((entry) => {
+      let anime = entry.media;
+
+      // Filter out based on format and status
+      let airingStatus = AppData.filterMappings[anime.status];
+      let format = AppData.filterMappings[anime.format];
+
+      if (activeAiringStatuses[airingStatus] &&
+          activeMediaFormats[format]) {
+
+        // Filters all apply, we're gucci!
+        mapped.push({
+          id: anime.id,
+          name: anime.title.userPreferred, 
+          image: anime.coverImage.large,
+          url: anime.siteUrl,
+        });
+      }
+
+    }
+  )));
+
+  return mapped;
+}
+
+function mapData_mal(data) {
+  let animeList = data.anime;
+
+  let mapped = [];
+
+  animeList.forEach((anime) => {
+    // Here's where we selectively include things based on airing status and media type
+    let listStatus = AppData.filterMappings[anime.watching_status];
+    let airingStatus = AppData.filterMappings[anime.airing_status];
+    let format = AppData.filterMappings[anime.type];
+
+    if (activeListStatuses[listStatus] &&
+        activeAiringStatuses[airingStatus] &&
+        activeMediaFormats[format]) {
+
+      mapped.push({
+        id: anime.mal_id,
+        name: anime.title,
+        image: anime.image_url,
+        url: anime.url,
+      });
+    }
+    
+  });
+
+  return mapped;
+}
+
+
+function buildPostBody_anilist(username) {
+  // TODO: only request the statuses we actually care about
+  // TODO: update queried fields to make our lives easier, dude
+
+  var statusLabels = SiteEnums.listStatus[ANILIST];
+  var requestStatuses = [];
+  Object.keys(activeListStatuses).forEach((status) => {
+    // If the status is enabled, add it to our local array
+    if (activeListStatuses[status]) {
+      requestStatuses.push(statusLabels[status])
+    }
+  });
+
+  console.log(`Making Query for ${activeSite} user [${username}]`);
+  console.log(`Enabled statuses: ${requestStatuses}`);
+
+
+  var query = `
+  query ($userName: String) {
+    MediaListCollection(
+      userName: $userName, 
+      type: ANIME,
+      status_in: [${requestStatuses}],
+      sort: MEDIA_ID
+      ) {
+        lists {
+          entries {
+            media {
+              id
+              siteUrl
+              title {
+                userPreferred
+              }
+              coverImage {
+                large
+              }
+              status
+              format
+            }
+          }
+          name
+          isCustomList
+          isSplitCompletedList
+          status
+        }
+    }
+  }
+  `;
+
+  var variables = {
+    userName: username
+  };
+
+  return JSON.stringify({
+    query: query,
+    variables: variables
+  });
+}
+
+
 function initializePicker(animeLists) {
   // We need to build a list of items for our favorite picker
   // The items will come from the passed anime lists from the user's profile
@@ -240,32 +548,3 @@ function shouldIncludeCurrent() {
   return true;
 }
 
-
-
-
-/* Draft Query
-MediaListCollection(
-  userName:"AltiusAinge", 
-  type:ANIME,
-  status_in: [CURRENT, COMPLETED],
-  sort: MEDIA_ID
-  ) {
-  lists {
-    entries {
-      media {
-        id
-        title {
-          userPreferred
-        }
-        coverImage {
-          large
-        }
-      }
-    }
-    name
-    isCustomList
-    isSplitCompletedList
-    status
-  }
-}
- */
