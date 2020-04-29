@@ -315,6 +315,26 @@ button {
     filter: none
 }
 
+/* Filter Styling */
+
+#filter-container {
+    display: flex;
+    justify-content: center;
+}
+
+.filter-block {
+    margin-left: 2rem;
+    margin-right: 2rem;
+    text-align: left;
+}
+
+.filter-toggle {
+    display: block;
+}
+
+.filter-input {
+    /* float: left; */
+}
 
 
 

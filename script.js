@@ -230,11 +230,6 @@ var activeMediaFormats = initializeFilter(MEDIA_FORMATS, FORMAT_TV);
 
 
 
-
-/* MAL API Stuff */
-// https://api.jikan.moe/v3/user/${username}/animelist/all
-
-
 initializeUI();
 updateUI();
 
@@ -326,11 +321,78 @@ function updateUI() {
   // And don't forget those buttons, my guy!
   document.querySelectorAll('[id^="button"]').forEach((element) => element.classList.remove('active'));
   document.getElementById(`button-${activeSite}`).classList.add('active');
+
+  // Ensure filter checked status reflects application state
+  updateFilterUI(LIST_STATUSES, activeListStatuses);
+  updateFilterUI(AIRING_STATUSES, activeAiringStatuses);
+  updateFilterUI(MEDIA_FORMATS, activeMediaFormats);
+
+}
+
+function updateFilterUI(filterItems, filterGroup) {
+  filterItems.forEach((item) => {
+    let id = createFilterID(item.value);
+    let input = document.getElementById(id);
+
+    input.checked = filterGroup[item.value];
+  })
 }
 
 function initializeUI() {
+  // Build Filter UI
+  let filterContainer = document.getElementById('filter-container');
+
+  filterContainer.appendChild(buildFilterBlock('List Status', LIST_STATUSES, activeListStatuses));
+
+  filterContainer.appendChild(buildFilterBlock('Airing Status', AIRING_STATUSES, activeAiringStatuses));
+
+  filterContainer.appendChild(buildFilterBlock('Media Type', MEDIA_FORMATS, activeMediaFormats));
 
 }
+
+function buildFilterBlock(title, filterItems, filterGroup) {
+  // Uhh, so I guess I want like a heading for these guys or something?
+  // Actually let's whip out a draft of something real quick
+  let filterBlock = document.createElement('div');
+  filterBlock.classList.add('filter-block');
+
+  let filterHeader = document.createElement('h2');
+  filterHeader.appendChild(document.createTextNode(title));
+
+  // Add the header to the block
+  filterBlock.appendChild(filterHeader);
+
+  // Add in the items as children
+  // Might even want to wrap these guys in a container eventually?  the way of the div?
+  filterItems.forEach((item) => {
+    let filterItem = buildFilterItem(item, filterGroup);
+
+    filterBlock.appendChild(filterItem);
+  })
+
+  return filterBlock;
+}
+
+function buildFilterItem(item, filterGroup) {
+  let filterToggle = document.createElement('label');
+  filterToggle.classList.add('filter-toggle');
+
+  let filterInput = document.createElement('input');
+  filterInput.setAttribute('type', 'checkbox');
+  filterInput.classList.add('filter-input');
+  filterInput.id = createFilterID(item.value);
+  // Wire up the callback
+  filterInput.onchange = () => toggleFilter(filterGroup, item.value);
+
+  let filterLabel = document.createTextNode(item.label);
+
+  // Compose our homies
+  filterToggle.appendChild(filterInput);
+  filterToggle.appendChild(filterLabel);
+
+  return filterToggle;
+}
+
 
 function buildPlaceholder() {
   return `${AppData.siteName[activeSite]} Username...`;
@@ -340,6 +402,17 @@ function buildPlaceholder() {
 
 
 /* Helper Functions */
+function toggleFilter(filterGroup, filterKey) {
+  // Check each of our filter guys, I guess?
+  if (filterGroup.hasOwnProperty(filterKey)) {
+    filterGroup[filterKey] = !filterGroup[filterKey];
+  }
+}
+
+function createFilterID(filterKey) {
+  return `filter-${filterKey}`
+}
+
 function mapData_anilist(data) {
   let mapped = [];
 
