@@ -246,6 +246,10 @@ hr {
 }
 
 
+#navback {
+    width: auto;
+}
+
 /* Search Controls */
 button {
     vertical-align: top;

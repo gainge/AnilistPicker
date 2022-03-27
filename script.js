@@ -293,7 +293,7 @@ function handleData(data) {
 
   console.log(anime);
 
-  // initializePicker(anime);
+  initializePicker(anime);
 }
 
 function handleError(error, message = 'Unable to retrieve list data!') {
@@ -536,18 +536,10 @@ function buildPostBody_anilist(username) {
 }
 
 
-function initializePicker(animeLists) {
-  // We need to build a list of items for our favorite picker
-  // The items will come from the passed anime lists from the user's profile
-  var items = [];
-
-  animeLists.forEach((list) => {addAnimeItems(list.entries, items)})
-
-  console.log(items);
-
+function initializePicker(anime) {
   // Construct the arguments for our picker
   var myPicker = new picker.Picker({
-      items: items,
+      items: anime,
       defaultSettings: {
           minBatchSize: 2,
           maxBatchSize: 12
@@ -597,23 +589,6 @@ function hide(id) {
 
 function show(id) {
   document.getElementById(id).classList.toggle("hidden", false);
-}
-
-function addAnimeItems(list, items) {
-  list.forEach((entry) => {
-    var anime = entry.media;
-
-    if (anime.status && anime.status !== "FINISHED") return;
-    if (anime.format === "MOVIE") return;
-
-    var newItem = {
-      id: anime.id, 
-      name: anime.title.userPreferred, 
-      image: anime.coverImage.large,
-    }
-
-    items.push(newItem);
-  })
 }
 
 
